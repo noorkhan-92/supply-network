@@ -1,0 +1,50 @@
+OrdererOrgs:
+  - Name: Orderer
+    Domain: supplychain.com
+    EnableNodeOUs: true
+    Specs:
+      - Hostname: orderer
+
+PeerOrgs:
+  - Name: Mofcomcn
+    Domain: mofcomcn.supplychain.com
+    EnableNodeOUs: true
+    Template:
+      Count: 1
+    Users:
+      Count: 1
+  - Name: Mocpk
+    Domain: mocpk.supplychain.com
+    EnableNodeOUs: true
+    Template:
+      Count: 1
+    Users:
+      Count: 1      
+  - Name: ICBC
+    Domain: icbc.supplychain.com
+    EnableNodeOUs: true
+    Template:
+      Count: 1
+    Users:
+      Count: 1
+  - Name: Ennoble
+    Domain: ennoble.supplychain.com
+    EnableNodeOUs: true
+    Template:
+      Count: 1
+    Users:
+      Count: 1
+  - Name: Exile
+    Domain: exile.supplychain.com
+    EnableNodeOUs: true
+    Template:
+      Count: 1
+    Users:
+      Count: 1
+  - Name: PIA
+    Domain: pia.supplychain.com
+    EnableNodeOUs: true
+    Template:
+      Count: 1
+    Users:
+      Count: 1

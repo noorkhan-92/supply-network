@@ -1,0 +1,380 @@
+version: "2.4"
+
+networks:
+  supplychain:
+
+services:
+  orderer.supplychain.com:
+    container_name: orderer.supplychain.com
+    image: hyperledger/fabric-orderer:2.3.1
+    dns_search: .
+    environment:
+      - ORDERER_GENERAL_LOGLEVEL=info
+      - FABRIC_LOGGING_SPEC=INFO
+      - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
+      - ORDERER_GENERAL_GENESISMETHOD=file
+      # in /var/hyperledger/.. var is replaced with /etc/ here and in volumes as well
+      - ORDERER_GENERAL_BOOTSTRAP=/var/hyperledger/orderer/genesis_block.pb
+      - ORDERER_GENERAL_LOCALMSPID=OrdererMSP
+      - ORDERER_GENERAL_LOCALMSPDIR=/var/hyperledger/orderer/msp
+      - ORDERER_GENERAL_TLS_ENABLED=true
+      - ORDERER_GENERAL_TLS_PRIVATEKEY=/var/hyperledger/orderer/tls/server.key
+      - ORDERER_GENERAL_TLS_CERTIFICATE=/var/hyperledger/orderer/tls/server.crt
+      - ORDERER_GENERAL_TLS_ROOTCAS=[/var/hyperledger/orderer/tls/ca.crt]
+      - ORDERER_KAFKA_VERBOSE=true
+      - ORDERER_GENERAL_CLUSTER_CLIENTCERTIFICATE=/var/hyperledger/orderer/tls/server.crt
+      - ORDERER_GENERAL_CLUSTER_CLIENTPRIVATEKEY=/var/hyperledger/orderer/tls/server.key
+      - ORDERER_GENERAL_CLUSTER_ROOTCAS=[/var/hyperledger/orderer/tls/ca.crt]
+      - ORDERER_METRICS_PROVIDER=prometheus
+      - ORDERER_OPERATIONS_LISTENADDRESS=0.0.0.0:8443
+      - ORDERER_GENERAL_LISTENPORT=1050
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/orderers
+    command: orderer
+    ports:
+      - 1050:1050
+      - 8443:8443
+    networks:
+      - supplychain
+    volumes:
+      - ../channel-artifacts/genesis_block.pb:/var/hyperledger/orderer/genesis_block.pb
+      - ../crypto-config/ordererOrganizations/supplychain.com/orderers/orderer.supplychain.com/msp:/var/hyperledger/orderer/msp
+      - ../crypto-config/ordererOrganizations/supplychain.com/orderers/orderer.supplychain.com/tls:/var/hyperledger/orderer/tls
+
+  couchdb0:
+    container_name: couchdb0
+    image: couchdb:latest
+    environment:
+      - COUCHDB_USER=admin
+      - COUCHDB_PASSWORD=adminpw
+    ports:
+      - 2984:5984
+    networks:
+      - supplychain
+
+  couchdb1:
+    container_name: couchdb1
+    image: couchdb:latest
+    environment:
+      - COUCHDB_USER=admin
+      - COUCHDB_PASSWORD=adminpw
+    ports:
+      - 3984:5984
+    networks:
+      - supplychain
+
+  couchdb2:
+    container_name: couchdb2
+    image: couchdb:latest
+    environment:
+      - COUCHDB_USER=admin
+      - COUCHDB_PASSWORD=adminpw
+    ports:
+      - 4984:5984
+    networks:
+      - supplychain
+
+  couchdb3:
+    container_name: couchdb3
+    image: couchdb:latest
+    environment:
+      - COUCHDB_USER=admin
+      - COUCHDB_PASSWORD=adminpw
+    ports:
+      - 5984:5984
+    networks:
+      - supplychain
+
+  couchdb4:
+    container_name: couchdb4
+    image: couchdb:latest
+    environment:
+      - COUCHDB_USER=admin
+      - COUCHDB_PASSWORD=adminpw
+    ports:
+      - 6984:5984
+    networks:
+      - supplychain
+
+  couchdb5:
+    container_name: couchdb5
+    image: couchdb:latest
+    environment:
+      - COUCHDB_USER=admin
+      - COUCHDB_PASSWORD=adminpw
+    ports:
+      - 7984:5984
+    networks:
+      - supplychain
+
+  peer0.mofcomcn.supplychain.com:
+    container_name: peer0.mofcomcn.supplychain.com
+    extends:
+      file: base.yaml
+      service: peer-base
+    environment:
+      - FABRIC_LOGGING_SPEC=info
+      - ORDERER_GENERAL_LOGLEVEL=info
+      - CORE_PEER_LOCALMSPID=MofcomcnMSP
+
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=artifacts_test
+
+      - CORE_PEER_ID=peer0.mofcomcn.supplychain.com
+      - CORE_PEER_ADDRESS=peer0.mofcomcn.supplychain.com:2051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:7051
+      - CORE_PEER_CHAINCODEADDRESS=peer0.mofcomcn.supplychain.com:2052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:2052
+      # Peer used to bootstrap gossip within organisation
+      # - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.mofcomcn.supplychain.com:8051
+      # Exposed for discovery Service
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.mofcomcn.supplychain.com:2051
+
+      # - CORE_OPERATIONS_LISTENADDRESS=0.0.0.0:9440
+
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb0:2984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=admin
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=adminpw
+      - CORE_METRICS_PROVIDER=prometheus
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/crypto/peer/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/crypto/peer/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/crypto/peer/tls/ca.crt
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/crypto/peer/msp
+    depends_on:
+      - couchdb0
+    ports:
+      - 2051:2051
+    volumes:
+      - ../crypto-config/peerOrganizations/mofcomcn.supplychain.com/peers/peer0.mofcomcn.supplychain.com/msp:/etc/hyperledger/crypto/peer/msp
+      - ../crypto-config/peerOrganizations/mofcomcn.supplychain.com/peers/peer0.mofcomcn.supplychain.com/tls:/etc/hyperledger/crypto/peer/tls
+      - /var/run/:/host/var/run/
+      # - ./channel/:/etc/hyperledger/channel/
+    networks:
+      - supplychain
+
+
+  peer0.mocpk.supplychain.com:
+    container_name: peer0.mocpk.supplychain.com
+    extends:
+      file: base.yaml
+      service: peer-base
+    environment:
+      - FABRIC_LOGGING_SPEC=info
+      - ORDERER_GENERAL_LOGLEVEL=info
+      - CORE_PEER_LOCALMSPID=MofpkMSP
+
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=artifacts_test
+
+      - CORE_PEER_ID=peer0.mocpk.supplychain.com
+      - CORE_PEER_ADDRESS=peer0.mocpk.supplychain.com:3051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:3051
+      - CORE_PEER_CHAINCODEADDRESS=peer0.mocpk.supplychain.com:3052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:3052
+      # Exposed for discovery Service
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.mocpk.supplychain.com:3051
+      # - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.mocpk.supplychain.com:10051
+
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb1:3984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=admin
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=adminpw
+      - CORE_METRICS_PROVIDER=prometheus
+      # - CORE_OPERATIONS_LISTENADDRESS=0.0.0.0:9440
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/crypto/peer/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/crypto/peer/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/crypto/peer/tls/ca.crt
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/crypto/peer/msp
+    ports:
+      - 3051:3051
+    volumes:
+      - ../crypto-config/peerOrganizations/mocpk.supplychain.com/peers/peer0.mocpk.supplychain.com/msp:/etc/hyperledger/crypto/peer/msp
+      - ../crypto-config/peerOrganizations/mocpk.supplychain.com/peers/peer0.mocpk.supplychain.com/tls:/etc/hyperledger/crypto/peer/tls
+      - /var/run/:/host/var/run/
+      # - ./channel/:/etc/hyperledger/channel/
+    networks:
+      - supplychain
+
+  peer0.icbc.supplychain.com:
+    container_name: peer0.icbc.supplychain.com
+    extends:
+      file: base.yaml
+      service: peer-base
+    environment:
+      - FABRIC_LOGGING_SPEC=info
+      - ORDERER_GENERAL_LOGLEVEL=info
+      - CORE_PEER_LOCALMSPID=IcbcMSP
+
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=artifacts_test
+
+      - CORE_PEER_ID=peer0.icbc.supplychain.com
+      - CORE_PEER_ADDRESS=peer0.icbc.supplychain.com:4051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:4051
+      # - CORE_PEER_CHAINCODEADDRESS=peer0.icbc.supplychain.com:7052
+      # - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
+      # Peer used to bootstrap gossip within organisation
+      # - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.icbc.supplychain.com:12051
+
+      # Exposed for discovery Service
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.icbc.supplychain.com:4051
+
+      # - CORE_OPERATIONS_LISTENADDRESS=0.0.0.0:9440
+
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb2:4984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=admin
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=adminpw
+      - CORE_METRICS_PROVIDER=prometheus
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/crypto/peer/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/crypto/peer/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/crypto/peer/tls/ca.crt
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/crypto/peer/msp
+    depends_on:
+      - couchdb2
+    ports:
+      - 4051:4051
+    volumes:
+      - ../crypto-config/peerOrganizations/icbc.supplychain.com/peers/peer0.icbc.supplychain.com/msp:/etc/hyperledger/crypto/peer/msp
+      - ../crypto-config/peerOrganizations/icbc.supplychain.com/peers/peer0.icbc.supplychain.com/tls:/etc/hyperledger/crypto/peer/tls
+      - /var/run/:/host/var/run/
+    networks:
+      - supplychain
+      
+  peer0.ennoble.supplychain.com:
+    container_name: peer0.ennoble.supplychain.com
+    extends:
+      file: base.yaml
+      service: peer-base
+    environment:
+      - FABRIC_LOGGING_SPEC=info
+      - ORDERER_GENERAL_LOGLEVEL=info
+      - CORE_PEER_LOCALMSPID=EnnobleMSP
+
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=artifacts_test
+
+      - CORE_PEER_ID=peer0.ennoble.supplychain.com
+      - CORE_PEER_ADDRESS=peer0.ennoble.supplychain.com:5051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:5051
+      # - CORE_PEER_CHAINCODEADDRESS=peer0.icbc.supplychain.com:7052
+      # - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
+      # Peer used to bootstrap gossip within organisation
+      # - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.icbc.supplychain.com:12051
+
+      # Exposed for discovery Service
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.ennoble.supplychain.com:5051
+
+      # - CORE_OPERATIONS_LISTENADDRESS=0.0.0.0:9440
+
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb3:5984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=admin
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=adminpw
+      - CORE_METRICS_PROVIDER=prometheus
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/crypto/peer/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/crypto/peer/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/crypto/peer/tls/ca.crt
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/crypto/peer/msp
+    depends_on:
+      - couchdb3
+    ports:
+      - 5051:5051
+    volumes:
+      - ../crypto-config/peerOrganizations/ennoble.supplychain.com/peers/peer0.ennoble.supplychain.com/msp:/etc/hyperledger/crypto/peer/msp
+      - ../crypto-config/peerOrganizations/ennoble.supplychain.com/peers/peer0.ennoble.supplychain.com/tls:/etc/hyperledger/crypto/peer/tls
+      - /var/run/:/host/var/run/
+    networks:
+      - supplychain
+      
+  peer0.exile.supplychain.com:
+    container_name: peer0.exile.supplychain.com
+    extends:
+      file: base.yaml
+      service: peer-base
+    environment:
+      - FABRIC_LOGGING_SPEC=info
+      - ORDERER_GENERAL_LOGLEVEL=info
+      - CORE_PEER_LOCALMSPID=ExileMSP
+
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=artifacts_test
+
+      - CORE_PEER_ID=peer0.exile.supplychain.com
+      - CORE_PEER_ADDRESS=peer0.exile.supplychain.com:6051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:6051
+      # - CORE_PEER_CHAINCODEADDRESS=peer0.icbc.supplychain.com:7052
+      # - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
+      # Peer used to bootstrap gossip within organisation
+      # - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.icbc.supplychain.com:12051
+
+      # Exposed for discovery Service
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.exile.supplychain.com:6051
+
+      # - CORE_OPERATIONS_LISTENADDRESS=0.0.0.0:9440
+
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb4:6984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=admin
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=adminpw
+      - CORE_METRICS_PROVIDER=prometheus
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/crypto/peer/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/crypto/peer/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/crypto/peer/tls/ca.crt
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/crypto/peer/msp
+    depends_on:
+      - couchdb4
+    ports:
+      - 6051:6051
+    volumes:
+      - ../crypto-config/peerOrganizations/exile.supplychain.com/peers/peer0.exile.supplychain.com/msp:/etc/hyperledger/crypto/peer/msp
+      - ../crypto-config/peerOrganizations/exile.supplychain.com/peers/peer0.exile.supplychain.com/tls:/etc/hyperledger/crypto/peer/tls
+      - /var/run/:/host/var/run/
+    networks:
+      - supplychain
+      
+  peer0.pia.supplychain.com:
+    container_name: peer0.pia.supplychain.com
+    extends:
+      file: base.yaml
+      service: peer-base
+    environment:
+      - FABRIC_LOGGING_SPEC=info
+      - ORDERER_GENERAL_LOGLEVEL=info
+      - CORE_PEER_LOCALMSPID=PiaMSP
+
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=artifacts_test
+
+      - CORE_PEER_ID=peer0.pia.supplychain.com
+      - CORE_PEER_ADDRESS=peer0.pia.supplychain.com:7051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:7051
+      # - CORE_PEER_CHAINCODEADDRESS=peer0.icbc.supplychain.com:7052
+      # - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
+      # Peer used to bootstrap gossip within organisation
+      # - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.icbc.supplychain.com:12051
+
+      # Exposed for discovery Service
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.pia.supplychain.com:7051
+
+      # - CORE_OPERATIONS_LISTENADDRESS=0.0.0.0:9440
+
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb5:7984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=admin
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=adminpw
+      - CORE_METRICS_PROVIDER=prometheus
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/crypto/peer/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/crypto/peer/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/crypto/peer/tls/ca.crt
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/crypto/peer/msp
+    depends_on:
+      - couchdb5
+    ports:
+      - 7051:7051
+    volumes:
+      - ../crypto-config/peerOrganizations/pia.supplychain.com/peers/peer0.pia.supplychain.com/msp:/etc/hyperledger/crypto/peer/msp
+      - ../crypto-config/peerOrganizations/pia.supplychain.com/peers/peer0.pia.supplychain.com/tls:/etc/hyperledger/crypto/peer/tls
+      - /var/run/:/host/var/run/
+    networks:
+      - supplychain
