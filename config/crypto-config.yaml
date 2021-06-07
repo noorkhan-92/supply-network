@@ -1,3 +1,9 @@
+#School of Computer Science and Engineering Beihang University Beijing China.
+#noorkhan_92@hotmail.com
+#this document define the organizations participating in the blockchain network.
+#cryptogen tool can be used to generate cryptographic materials for the networks of these orgs.
+#cryptogen generate --config=crypto-config.yaml --output=crypto-config
+
 OrdererOrgs:
   - Name: Orderer
     Domain: supplychain.com

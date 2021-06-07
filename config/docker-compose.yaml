@@ -13,8 +13,7 @@ services:
       - FABRIC_LOGGING_SPEC=INFO
       - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
       - ORDERER_GENERAL_GENESISMETHOD=file
-      # in /var/hyperledger/.. var is replaced with /etc/ here and in volumes as well
-      - ORDERER_GENERAL_BOOTSTRAP=/var/hyperledger/orderer/genesis_block.pb
+      - ORDERER_GENERAL_BOOTSTRAPFILE=/var/hyperledger/orderer/genesis_block.pb
       - ORDERER_GENERAL_LOCALMSPID=OrdererMSP
       - ORDERER_GENERAL_LOCALMSPDIR=/var/hyperledger/orderer/msp
       - ORDERER_GENERAL_TLS_ENABLED=true
@@ -120,7 +119,7 @@ services:
 
       - CORE_PEER_ID=peer0.mofcomcn.supplychain.com
       - CORE_PEER_ADDRESS=peer0.mofcomcn.supplychain.com:2051
-      - CORE_PEER_LISTENADDRESS=0.0.0.0:7051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:2051
       - CORE_PEER_CHAINCODEADDRESS=peer0.mofcomcn.supplychain.com:2052
       - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:2052
       # Peer used to bootstrap gossip within organisation
@@ -131,7 +130,7 @@ services:
       # - CORE_OPERATIONS_LISTENADDRESS=0.0.0.0:9440
 
       - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
-      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb0:2984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb0:5984
       - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=admin
       - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=adminpw
       - CORE_METRICS_PROVIDER=prometheus
@@ -175,7 +174,7 @@ services:
       # - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.mocpk.supplychain.com:10051
 
       - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
-      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb1:3984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb1:5984
       - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=admin
       - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=adminpw
       - CORE_METRICS_PROVIDER=prometheus
@@ -210,8 +209,8 @@ services:
       - CORE_PEER_ID=peer0.icbc.supplychain.com
       - CORE_PEER_ADDRESS=peer0.icbc.supplychain.com:4051
       - CORE_PEER_LISTENADDRESS=0.0.0.0:4051
-      # - CORE_PEER_CHAINCODEADDRESS=peer0.icbc.supplychain.com:7052
-      # - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
+      - CORE_PEER_CHAINCODEADDRESS=peer0.icbc.supplychain.com:4052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:4052
       # Peer used to bootstrap gossip within organisation
       # - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.icbc.supplychain.com:12051
 
@@ -221,7 +220,7 @@ services:
       # - CORE_OPERATIONS_LISTENADDRESS=0.0.0.0:9440
 
       - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
-      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb2:4984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb2:5984
       - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=admin
       - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=adminpw
       - CORE_METRICS_PROVIDER=prometheus
@@ -256,8 +255,8 @@ services:
       - CORE_PEER_ID=peer0.ennoble.supplychain.com
       - CORE_PEER_ADDRESS=peer0.ennoble.supplychain.com:5051
       - CORE_PEER_LISTENADDRESS=0.0.0.0:5051
-      # - CORE_PEER_CHAINCODEADDRESS=peer0.icbc.supplychain.com:7052
-      # - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
+      - CORE_PEER_CHAINCODEADDRESS=peer0.icbc.supplychain.com:5052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:5052
       # Peer used to bootstrap gossip within organisation
       # - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.icbc.supplychain.com:12051
 
@@ -302,8 +301,8 @@ services:
       - CORE_PEER_ID=peer0.exile.supplychain.com
       - CORE_PEER_ADDRESS=peer0.exile.supplychain.com:6051
       - CORE_PEER_LISTENADDRESS=0.0.0.0:6051
-      # - CORE_PEER_CHAINCODEADDRESS=peer0.icbc.supplychain.com:7052
-      # - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
+      - CORE_PEER_CHAINCODEADDRESS=peer0.icbc.supplychain.com:6052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:6052
       # Peer used to bootstrap gossip within organisation
       # - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.icbc.supplychain.com:12051
 
@@ -313,7 +312,7 @@ services:
       # - CORE_OPERATIONS_LISTENADDRESS=0.0.0.0:9440
 
       - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
-      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb4:6984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb4:5984
       - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=admin
       - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=adminpw
       - CORE_METRICS_PROVIDER=prometheus
@@ -348,8 +347,8 @@ services:
       - CORE_PEER_ID=peer0.pia.supplychain.com
       - CORE_PEER_ADDRESS=peer0.pia.supplychain.com:7051
       - CORE_PEER_LISTENADDRESS=0.0.0.0:7051
-      # - CORE_PEER_CHAINCODEADDRESS=peer0.icbc.supplychain.com:7052
-      # - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
+      - CORE_PEER_CHAINCODEADDRESS=peer0.icbc.supplychain.com:7052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
       # Peer used to bootstrap gossip within organisation
       # - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.icbc.supplychain.com:12051
 
@@ -359,7 +358,7 @@ services:
       # - CORE_OPERATIONS_LISTENADDRESS=0.0.0.0:9440
 
       - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
-      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb5:7984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb5:5984
       - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=admin
       - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=adminpw
       - CORE_METRICS_PROVIDER=prometheus
@@ -376,5 +375,45 @@ services:
       - ../crypto-config/peerOrganizations/pia.supplychain.com/peers/peer0.pia.supplychain.com/msp:/etc/hyperledger/crypto/peer/msp
       - ../crypto-config/peerOrganizations/pia.supplychain.com/peers/peer0.pia.supplychain.com/tls:/etc/hyperledger/crypto/peer/tls
       - /var/run/:/host/var/run/
+    networks:
+      - supplychain
+      
+  cli:
+    container_name: cli
+    image: hyperledger/fabric-tools:2.3.1
+    labels:
+      service: hyperledger-fabric
+    tty: true
+    stdin_open: true
+    environment:
+      - GOPATH=/opt/gopath
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - FABRIC_LOGGING_SPEC=INFO
+      #- FABRIC_LOGGING_SPEC=DEBUG
+      - CORE_PEER_ID=cli
+      - CORE_PEER_ADDRESS=peer0.mofcomcn.supplychain.com:2051
+      - CORE_PEER_LOCALMSPID=MofcomcnMSP
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_TLS_CERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/mofcomcn.supplychain.com/peers/peer0.mofcomcn.supplychain.com/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/mofcomcn.supplychain.com/peers/peer0.mofcomcn.supplychain.com/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/mofcomcn.supplychain.com/peers/peer0.mofcomcn.supplychain.com/tls/ca.crt
+      - CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/mofcomcn.supplychain.com/users/Admin@mofcomcn.supplychain.com/msp
+
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    command: /bin/bash
+    volumes:
+        - /var/run/:/host/var/run/
+        - ./../chaincode/:/opt/gopath/src/github.com/chaincode
+        - ./../crypto-config:/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/
+        - ./../scripts:/opt/gopath/src/github.com/hyperledger/fabric/peer/scripts/
+        - ./../channel-artifacts:/opt/gopath/src/github.com/hyperledger/fabric/peer/channel-artifacts
+    depends_on:
+      - orderer.supplychain.com
+      - peer0.mofcomcn.supplychain.com
+      - peer0.mocpk.supplychain.com
+      - peer0.icbc.supplychain.com
+      - peer0.ennoble.supplychain.com
+      - peer0.exile.supplychain.com
+      - peer0.pia.supplychain.com
     networks:
       - supplychain

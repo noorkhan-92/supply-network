@@ -1,7 +1,9 @@
-# Copyright IBM Corp. All Rights Reserved.
-#
-# SPDX-License-Identifier: Apache-2.0
-#
+#School of Computer Science and Engineering Beihang University Beijing China.
+#noorkhan_92@hotmail.com
+#this document define the configuration transactions for configtx.yaml to generate genesis block and channel artifacts etc.
+#configtxgen tool can be used to generate genesis block and channels for the network.
+#configtxgen -profile SupplychainApplicationGenesis -outputBlock channel-artifacts/genesis_block.pb -channelID supplychannel
+#a script folder is supplied with configuration files where one can easily run those scripts to run commands and configure the network.
 
 ---
 ################################################################################
@@ -14,22 +16,14 @@
 ################################################################################
 Organizations:
 
-    # SampleOrg defines an MSP using the sampleconfig.  It should never be used
-    # in production but may be used as a template for other definitions
+    # Orderer defines the orderer for the network
     - &Orderer
-        # DefaultOrg defines the organization which is used in the sampleconfig
-        # of the fabric.git development environment
         Name: Orderer
 
-        # ID to load the MSP definition as
         ID: OrdererMSP
 
-        # MSPDir is the filesystem path which contains the MSP configuration
         MSPDir: ../crypto-config/ordererOrganizations/supplychain.com/msp
 
-        # Policies defines the set of policies at this level of the config tree
-        # For organization policies, their canonical path is usually
-        #   /Channel/<Application|Orderer>/<OrgName>/<PolicyName>
         Policies:
             Readers:
                 Type: Signature
@@ -44,19 +38,15 @@ Organizations:
         OrdererEndpoints:
             - orderer.supplychain.com:1050
 
+# All the following organizations are peer organizations of the network which form the whole supplychain echo-system.
+
     - &Mofcomcn
-        # DefaultOrg defines the organization which is used in the sampleconfig
-        # of the fabric.git development environment
         Name: MofcomcnMSP
 
-        # ID to load the MSP definition as
         ID: MofcomcnMSP
 
         MSPDir: ../crypto-config/peerOrganizations/mofcomcn.supplychain.com/msp
 
-        # Policies defines the set of policies at this level of the config tree
-        # For organization policies, their canonical path is usually
-        #   /Channel/<Application|Orderer>/<OrgName>/<PolicyName>
         Policies:
             Readers:
                 Type: Signature
@@ -72,18 +62,12 @@ Organizations:
                 Rule: "OR('MofcomcnMSP.peer')"
 
     - &Mocpk
-        # DefaultOrg defines the organization which is used in the sampleconfig
-        # of the fabric.git development environment
         Name: MocpkMSP
 
-        # ID to load the MSP definition as
         ID: MocpkMSP
 
         MSPDir: ../crypto-config/peerOrganizations/mocpk.supplychain.com/msp
 
-        # Policies defines the set of policies at this level of the config tree
-        # For organization policies, their canonical path is usually
-        #   /Channel/<Application|Orderer>/<OrgName>/<PolicyName>
         Policies:
             Readers:
                 Type: Signature
@@ -99,18 +83,12 @@ Organizations:
                 Rule: "OR('MocpkMSP.peer')"
                 
     - &Icbc
-        # DefaultOrg defines the organization which is used in the sampleconfig
-        # of the fabric.git development environment
         Name: IcbcMSP
 
-        # ID to load the MSP definition as
         ID: IcbcMSP
 
         MSPDir: ../crypto-config/peerOrganizations/icbc.supplychain.com/msp
 
-        # Policies defines the set of policies at this level of the config tree
-        # For organization policies, their canonical path is usually
-        #   /Channel/<Application|Orderer>/<OrgName>/<PolicyName>
         Policies:
             Readers:
                 Type: Signature
@@ -126,18 +104,12 @@ Organizations:
                 Rule: "OR('IcbcMSP.peer')"
                 
     - &Ennoble
-        # DefaultOrg defines the organization which is used in the sampleconfig
-        # of the fabric.git development environment
         Name: EnnobleMSP
 
-        # ID to load the MSP definition as
         ID: EnnobleMSP
 
         MSPDir: ../crypto-config/peerOrganizations/ennoble.supplychain.com/msp
 
-        # Policies defines the set of policies at this level of the config tree
-        # For organization policies, their canonical path is usually
-        #   /Channel/<Application|Orderer>/<OrgName>/<PolicyName>
         Policies:
             Readers:
                 Type: Signature
@@ -153,18 +125,12 @@ Organizations:
                 Rule: "OR('EnnobleMSP.peer')"
                 
     - &Exile
-        # DefaultOrg defines the organization which is used in the sampleconfig
-        # of the fabric.git development environment
         Name: ExileMSP
 
-        # ID to load the MSP definition as
         ID: ExileMSP
 
         MSPDir: ../crypto-config/peerOrganizations/exile.supplychain.com/msp
 
-        # Policies defines the set of policies at this level of the config tree
-        # For organization policies, their canonical path is usually
-        #   /Channel/<Application|Orderer>/<OrgName>/<PolicyName>
         Policies:
             Readers:
                 Type: Signature
@@ -180,18 +146,12 @@ Organizations:
                 Rule: "OR('ExileMSP.peer')"
                 
     - &Pia
-        # DefaultOrg defines the organization which is used in the sampleconfig
-        # of the fabric.git development environment
         Name: PiaMSP
 
-        # ID to load the MSP definition as
         ID: PiaMSP
 
         MSPDir: ../crypto-config/peerOrganizations/pia.supplychain.com/msp
 
-        # Policies defines the set of policies at this level of the config tree
-        # For organization policies, their canonical path is usually
-        #   /Channel/<Application|Orderer>/<OrgName>/<PolicyName>
         Policies:
             Readers:
                 Type: Signature
@@ -414,10 +374,20 @@ Profiles:
         <<: *ChannelDefaults
         Orderer:
             <<: *OrdererDefaults
+            OrdererType: etcdraft
             Organizations:
                 - *Orderer
             Capabilities:
                 <<: *OrdererCapabilities
+        Consortiums:
+            SupplyConsortium:
+                Organizations:
+                    - *Mofcomcn
+                    - *Mocpk
+                    - *Icbc
+                    - *Ennoble
+                    - *Exile
+                    - *Pia        
         Application:
             <<: *ApplicationDefaults
             Organizations:
@@ -428,7 +398,7 @@ Profiles:
                 - *Exile
                 - *Pia
     SupplyChannel:
-        Consortium: SampleConsortium
+        Consortium: SupplyConsortium
         <<: *ChannelDefaults
         Application:
             <<: *ApplicationDefaults
